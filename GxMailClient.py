@@ -23,6 +23,7 @@ USERNAME = '7cf305001@smtp-brevo.com'  # Update with your username
 PASSWORD = 'Djyp5NEHAgvOrbX6'  # Update with your actual password
 SENDER_EMAIL = 'harshilanuwadia97@gmail.com'  # Sender's email address
 DRAFT_FILE = 'drafts.json'  # File to store drafts
+SENT_FILE = 'sent.json'  # File to store sent emails
 
 # Predefined templates for quick email creation
 TEMPLATES = {
@@ -42,12 +43,7 @@ def validate_email(email):
 def save_draft(draft):
     """Save draft email to a JSON file."""
     try:
-        if os.path.exists(DRAFT_FILE):
-            with open(DRAFT_FILE, 'r') as f:
-                drafts = json.load(f)
-        else:
-            drafts = []
-
+        drafts = load_drafts()  # Load existing drafts
         drafts.append(draft)
         with open(DRAFT_FILE, 'w') as f:
             json.dump(drafts, f, indent=4)
@@ -68,6 +64,30 @@ def load_drafts():
     except Exception as e:
         print(f"{Fore.RED}Error loading drafts: {e}{Style.RESET_ALL}")
         logging.error(f"Error loading drafts: {e}")
+        return []
+
+def save_sent_email(email_data):
+    """Save sent email data to a JSON file."""
+    try:
+        sent_emails = load_sent_emails()  # Load existing sent emails
+        sent_emails.append(email_data)
+        with open(SENT_FILE, 'w') as f:
+            json.dump(sent_emails, f, indent=4)
+    except Exception as e:
+        logging.error(f"Error saving sent email: {e}")
+
+def load_sent_emails():
+    """Load and display sent emails."""
+    try:
+        if os.path.exists(SENT_FILE):
+            with open(SENT_FILE, 'r') as f:
+                sent_emails = json.load(f)
+            return sent_emails
+        else:
+            return []
+    except Exception as e:
+        print(f"{Fore.RED}Error loading sent emails: {e}{Style.RESET_ALL}")
+        logging.error(f"Error loading sent emails: {e}")
         return []
 
 def send_email(sender_email, display_name, receiver_emails, subject, body, priority, cc_emails=None, bcc_emails=None, read_receipt=False):
@@ -104,6 +124,15 @@ def send_email(sender_email, display_name, receiver_emails, subject, body, prior
 
             print(f"{Fore.GREEN}Email sent successfully to {', '.join(receiver_emails)}{Style.RESET_ALL}")
             logging.info(f"Email sent successfully to {', '.join(receiver_emails)}")
+            save_sent_email({
+                "receiver_emails": receiver_emails,
+                "cc_emails": cc_emails,
+                "bcc_emails": bcc_emails,
+                "subject": subject,
+                "body": body,
+                "priority": priority,
+                "timestamp": time.time()
+            })
             break
 
         except smtplib.SMTPAuthenticationError:
@@ -178,7 +207,7 @@ def main():
     print(f"{Fore.YELLOW}Tip: Type 'exit' to cancel at any time.{Style.RESET_ALL}")
 
     while True:
-        action = input(f"{Fore.YELLOW}Choose action: 1) Compose Email 2) View Drafts 3) Use Template 4) Set Up Signature 5) Exit: {Style.RESET_ALL}").strip()
+        action = input(f"{Fore.YELLOW}Choose action: 1) Compose Email 2) View Drafts 3) Use Template 4) Set Up Signature 5) View Sent Emails 6) Exit: {Style.RESET_ALL}").strip()
 
         if action == '1':  # Compose new email
             display_name = input("Enter your display name: ")
@@ -195,10 +224,9 @@ def main():
             if subject.lower() == 'exit': break
             body = input("Enter the body of the email: ")
             if body.lower() == 'exit': break
-            
+
             priority = input("Enter the priority (1 = High, 3 = Normal, 5 = Low): ")
-            priority = int(priority) if priority.isdigit() else 3  #
-            # Default to Normal if invalid
+            priority = int(priority) if priority.isdigit() else 3  # Default to Normal if invalid
             read_receipt = input("Request a read receipt? (yes/no): ").strip().lower() == 'yes'
 
             # Preview the email before sending
@@ -244,9 +272,21 @@ def main():
         elif action == '4':  # Set up signature
             setup_signature()
 
-        elif action == '5':  # Exit
-            print(f"{Fore.GREEN}Exiting the email client. Goodbye!{Style.RESET_ALL}")
-            break
+        elif action == '5':  # View sent emails
+            sent_emails = load_sent_emails()
+            if sent_emails:
+                print(f"{Fore.CYAN}--- Sent Emails ---{Style.RESET_ALL}")
+                for idx, email in enumerate(sent_emails, start=1):
+                    print(f"{idx}) To: {', '.join(email['receiver_emails'])}, Subject: {email['subject']}, Sent at: {time.ctime(email['timestamp'])}")
+                print(f"{Fore.YELLOW}--- End of Sent Emails ---{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.YELLOW}No sent emails available.{Style.RESET_ALL}")
+
+        elif action == '6':  # Exit
+            confirm_exit = input("Are you sure you want to exit? (yes/no): ").strip().lower()
+            if confirm_exit == 'yes':
+                print(f"{Fore.GREEN}Exiting the email client. Goodbye!{Style.RESET_ALL}")
+                break
 
         else:
             print(f"{Fore.RED}Invalid option. Please try again.{Style.RESET_ALL}")
