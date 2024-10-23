@@ -1,7 +1,7 @@
 # GxMailClient
 
-![GitHub Repo stars](https://img.shields.io/github/stars/yourusername/GxMailClient?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/GxMailClient)
+![GitHub Repo stars](https://img.shields.io/github/stars/Harshil-Anuwadia/GxMailClient?style=social)
+![GitHub forks](https://img.shields.io/github/forks/Harshil-Anuwadia/GxMailClient)
 ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 A simple and efficient mail client designed to send emails using an SMTP server. GxMailClient provides a straightforward interface for sending emails programmatically with ease.
