@@ -17,11 +17,11 @@ init(autoreset=True)
 logging.basicConfig(filename='email_client.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # SMTP Server Configuration
-SMTP_SERVER = 'smtp-relay.brevo.com'
+SMTP_SERVER = 'Your SMTP Address'
 SMTP_PORT = 587
-USERNAME = '7cf305001@smtp-brevo.com'  # Update with your username
-PASSWORD = 'Djyp5NEHAgvOrbX6'  # Update with your actual password
-SENDER_EMAIL = 'harshilanuwadia97@gmail.com'  # Sender's email address
+USERNAME = 'Your Username '  # Update with your username
+PASSWORD = 'Your Password'  # Update with your actual password
+SENDER_EMAIL = 'Your Email ID'  # Sender's email address
 DRAFT_FILE = 'drafts.json'  # File to store drafts
 SENT_FILE = 'sent.json'  # File to store sent emails
 
