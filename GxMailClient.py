@@ -19,7 +19,7 @@ logging.basicConfig(filename='email_client.log', level=logging.INFO, format='%(a
 # SMTP Server Configuration
 SMTP_SERVER = 'Your SMTP Address'
 SMTP_PORT = 587
-USERNAME = 'Your Username '  # Update with your username
+USERNAME = 'Your Username'  # Update with your username
 PASSWORD = 'Your Password'  # Update with your actual password
 SENDER_EMAIL = 'Your Email ID'  # Sender's email address
 DRAFT_FILE = 'drafts.json'  # File to store drafts
